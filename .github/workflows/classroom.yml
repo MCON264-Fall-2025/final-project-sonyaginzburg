@@ -33,11 +33,11 @@ jobs:
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         env:
-          VENUE_SELECTION_TESTS_RESULTS: "${{steps.autograder.outputs.venue-selection-tests}}"
-          GUEST_MANAGEMENT_TESTS_RESULTS: "${{steps.autograder.outputs.guest-management-tests}}"
-          SEATING_ALGORITHM_TESTS_RESULTS: "${{steps.autograder.outputs.seating-algorithm-tests}}"
-          TASK_WORKFLOW_AND_UNDO_TESTS_RESULTS: "${{steps.autograder.outputs.task-workflow-and-undo-tests}}"
-          STUDENT_UNIT_TESTS_COVERAGE_RESULTS: "${{steps.autograder.outputs.student-unit-tests-coverage}}"
-          README_DOCUMENTATION_RESULTS: "${{steps.autograder.outputs.readme-documentation}}"
+          VENUE_SELECTION_TESTS_RESULTS: "${{steps.autograder.outputs.VENUE_SELECTION_TESTS_RESULTS}}"
+          GUEST_MANAGEMENT_TESTS_RESULTS: "${{steps.autograder.outputs.GUEST_MANAGEMENT_TESTS_RESULTS}}"
+          SEATING_ALGORITHM_TESTS_RESULTS: "${{steps.autograder.outputs.SEATING_ALGORITHM_TESTS_RESULTS}}"
+          TASK_WORKFLOW_AND_UNDO_TESTS_RESULTS: "${{steps.autograder.outputs.TASK_WORKFLOW_AND_UNDO_TESTS_RESULTS}}"
+          STUDENT_UNIT_TESTS_COVERAGE_RESULTS: "${{steps.autograder.outputs.STUDENT_UNIT_TESTS_COVERAGE_RESULTS}}"
+          README_DOCUMENTATION_RESULTS: "${{steps.autograder.outputs.README_DOCUMENTATION_RESULTS}}"
         with:
           runners: venue-selection-tests,guest-management-tests,seating-algorithm-tests,task-workflow-and-undo-tests,student-unit-tests-coverage,readme-documentation
