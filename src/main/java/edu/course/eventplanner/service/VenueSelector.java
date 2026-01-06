@@ -33,7 +33,7 @@ public class VenueSelector {
                 return Double.compare(v1.getCapacity(), v2.getCapacity());
             }
         });
-        return validVenues.get(0);
+        return validVenues.getFirst();
 
     }
 

@@ -8,6 +8,10 @@ public class GuestListManager {
     private final LinkedList<Guest> guests = new LinkedList<>();
     private final Map<String, Guest> guestByName = new HashMap<>();
 
+    // something goes here
+    public GuestListManager() {
+    }
+
     public void addGuest(Guest guest) {
         if (guest == null) return;
         if (guestByName.containsKey(guest.getName())) {
@@ -35,12 +39,6 @@ public class GuestListManager {
     }
     public List<Guest> getAllGuests() {
         return guests;
-    }
-    // print all guests
-    //TODO
-    public List<Guest> printAllGuests() {
-        List<Guest> guestList = new LinkedList<>();
-        return guestList;
     }
 
 }
