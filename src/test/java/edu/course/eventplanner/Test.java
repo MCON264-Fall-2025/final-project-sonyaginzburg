@@ -1,14 +1,20 @@
 package edu.course.eventplanner;
 
 import edu.course.eventplanner.model.Guest;
+import edu.course.eventplanner.model.Venue;
 import edu.course.eventplanner.service.GuestListManager;
+import edu.course.eventplanner.service.VenueSelector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Test {
 
+    // GUEST LIST MANAGER TESTS
     private GuestListManager guestListManager;
 
     @BeforeEach
@@ -79,6 +85,55 @@ public class Test {
         guestListManager.removeGuest("Sara");
         Guest found = guestListManager.findGuest("Sara");
         assertNull(found);
+    }
+
+    // VENUE SELECTOR TESTS
+    // selecting a venue within budget
+    private List<Venue> venues;
+    private VenueSelector venueSelector;
+
+    @BeforeEach
+    void setUpVenueSelector() {
+        venues = new ArrayList<>();
+        venues.add(new Venue("Community Hall",1500,40,5,8));
+        venues.add(new Venue("Garden Hall",2500,60,8,8));
+        venues.add(new Venue("Grand Ballroom",5000,120,15,8));
+        venueSelector = new VenueSelector(venues);
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Test select cheapest venue")
+    void testSelectCheapestVenue() {
+        Venue selected = venueSelector.selectVenue(10000, 30);
+        assertNotNull(selected);
+        assertEquals("Community Hall", selected.getName());
+        assertEquals(1500, selected.getCost());
+    }
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Test select venue with smallest capacity")
+    void testSelectSmallestCapacityVenue() {
+        List<Venue> selectedVenues = new ArrayList<>();
+        selectedVenues.add(new Venue("Hall 1",1500,40,5,8));
+        selectedVenues.add(new Venue("Hall 2",1500,60,8,8));
+        VenueSelector selector = new VenueSelector(selectedVenues);
+        Venue selected = selector.selectVenue(2000,30);
+        assertNotNull(selected);
+        assertEquals("Hall 1", selected.getName());
+        assertEquals(40, selected.getCapacity());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Test select venue, budget too low, returns null")
+    void testSelectVenueBudgetTooLow() {
+        Venue selected = venueSelector.selectVenue(1000, 30);
+        assertNull(selected);
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Test select venue, too many guests, returns null")
+    void testSelectVenueTooManyGuests() {
+        Venue selected = venueSelector.selectVenue(10000, 150);
+        assertNull(selected);
     }
 
 
