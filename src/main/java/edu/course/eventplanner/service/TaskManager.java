@@ -9,17 +9,25 @@ public class TaskManager {
     private final Stack<Task> completed = new Stack<>();
 
     public void addTask(Task task) {
-        // TODO - what am I doing here
         upcoming.add(task);
     }
 
     public Task executeNextTask() {
-        completed.add(upcoming.poll());
-        return null;
+        if (upcoming.isEmpty()) {
+            return null;
+        }
+        Task task = upcoming.poll();
+        completed.push(task);
+        return task;
     }
 
     public Task undoLastTask() {
-        return null;
+        if  (completed.isEmpty()) {
+            return null;
+        }
+        Task task = completed.pop();
+        ((LinkedList<Task>)upcoming).addFirst(task);
+        return task;
     }
 
     public int remainingTaskCount() {

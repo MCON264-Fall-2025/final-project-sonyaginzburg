@@ -3,11 +3,13 @@ package edu.course.eventplanner;
 import edu.course.eventplanner.model.Guest;
 import edu.course.eventplanner.model.Venue;
 import edu.course.eventplanner.service.GuestListManager;
+import edu.course.eventplanner.service.SeatingPlanner;
 import edu.course.eventplanner.service.VenueSelector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -134,6 +136,26 @@ public class Test {
     void testSelectVenueTooManyGuests() {
         Venue selected = venueSelector.selectVenue(10000, 150);
         assertNull(selected);
+    }
+
+    // SEATING PLANNER TESTS
+
+    private Venue testVenue;
+    private SeatingPlanner seatingPlanner;
+
+    @BeforeEach
+    void setUpSeatingPlanner() {
+        testVenue = new Venue("Test Hall", 1000, 50, 5, 8);
+        seatingPlanner = new SeatingPlanner(testVenue);
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Test seating groups by tag")
+    void testSeatingGroupsByTag() {
+        List<Guest> guests = Arrays.asList(
+                new Guest("Sara", "family"),
+                new Guest("Chaim", "friends")
+        );
     }
 
 
