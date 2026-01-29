@@ -8,7 +8,6 @@ public class GuestListManager {
     private final LinkedList<Guest> guests = new LinkedList<>();
     private final Map<String, Guest> guestByName = new HashMap<>();
 
-    // something goes here
     public GuestListManager() {
     }
 

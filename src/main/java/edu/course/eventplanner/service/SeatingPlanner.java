@@ -27,7 +27,7 @@ public class SeatingPlanner {
             // adding guests to their tag queue
             groupQueues.get(tag).add(guest);
         }
-        // Then get table capacity, (they actually all have the same capacity but I will add new tables)
+        // Then get table capacity, (they actually all have the same capacity but I could add new tables)
         int tableCapacity = venue.getCapacity();
         if  (tableCapacity <= 0) {
             tableCapacity = 8;

@@ -22,7 +22,7 @@ public class VenueSelector {
         if (validVenues.isEmpty()) {
             return null;
         }
-        // Sort venues using custom comparator
+        // Sort venues using comparator
         validVenues.sort(new Comparator<Venue>() {
             @Override
             public int compare(Venue v1, Venue v2) {
