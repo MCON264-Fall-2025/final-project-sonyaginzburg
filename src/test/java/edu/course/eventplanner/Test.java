@@ -1,9 +1,11 @@
 package edu.course.eventplanner;
 
 import edu.course.eventplanner.model.Guest;
+import edu.course.eventplanner.model.Task;
 import edu.course.eventplanner.model.Venue;
 import edu.course.eventplanner.service.GuestListManager;
 import edu.course.eventplanner.service.SeatingPlanner;
+import edu.course.eventplanner.service.TaskManager;
 import edu.course.eventplanner.service.VenueSelector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -139,7 +141,7 @@ public class Test {
     }
 
     // SEATING PLANNER TESTS
-
+    // seating guests by group
     private Venue testVenue;
     private SeatingPlanner seatingPlanner;
 
@@ -158,6 +160,113 @@ public class Test {
         );
     }
 
+
+    // TASK MANAGER TESTS
+    //executing tasks
+    private TaskManager taskManager;
+
+    @BeforeEach
+    void setUpTaskManager() {
+        taskManager = new TaskManager();
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Executing task returns task")
+    void testExecutingTask_returnsTask() {
+        Task task = new Task("Send invitations");
+        taskManager.addTask(task);
+        Task executed = taskManager.executeNextTask();
+
+        assertNotNull(executed);
+        assertEquals("Send invitations", executed.getDescription());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Executing task decreases remaining count")
+    void testExecuteNextTask_DecreasesCount() {
+        taskManager.addTask(new Task("Task 1"));
+        taskManager.addTask(new Task("Task 2"));
+
+        taskManager.executeNextTask();
+
+        assertEquals(1, taskManager.remainingTaskCount());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Tasks should execute in FIFO order")
+    void testExecuteNextTask_FIFOOrder() {
+        taskManager.addTask(new Task("First"));
+        taskManager.addTask(new Task("Second"));
+        taskManager.addTask(new Task("Third"));
+        Task first = taskManager.executeNextTask();
+        Task second = taskManager.executeNextTask();
+
+        assertEquals("First", first.getDescription());
+        assertEquals("Second", second.getDescription());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Executing from empty queue, returns null")
+    void testExecuteNextTask_EmptyQueue_ReturnsNull() {
+        Task executed = taskManager.executeNextTask();
+
+        assertNull(executed);
+    }
+
+    // Undoing tasks
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Undoing task returns the last exectued task")
+    void testUndoLastTask_ReturnsLastExecuted() {
+        Task task = new Task("Send invitations");
+        taskManager.addTask(task);
+        taskManager.executeNextTask();
+
+        Task undone = taskManager.undoLastTask();
+
+        assertNotNull(undone);
+        assertEquals("Send invitations", undone.getDescription());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Undoing task should increase remaining count")
+    void testUndoLastTask_IncreasesCount() {
+        taskManager.addTask(new Task("Task 1"));
+        taskManager.executeNextTask();
+        assertEquals(0, taskManager.remainingTaskCount());
+
+        taskManager.undoLastTask();
+        assertEquals(1, taskManager.remainingTaskCount());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Undo tasks in LIFO order")
+    void testUndoLastTask_LIFOOrder() {
+        taskManager.addTask(new Task("First"));
+        taskManager.addTask(new Task("Second"));
+        taskManager.addTask(new Task("Third"));
+
+        taskManager.executeNextTask();
+        taskManager.executeNextTask();
+        taskManager.executeNextTask();
+
+        Task undone1 = taskManager.undoLastTask();
+        Task undone2 = taskManager.undoLastTask();
+
+        assertEquals("Third", undone1.getDescription());
+        assertEquals("Second", undone2.getDescription());
+    }
+
+    @org.junit.jupiter.api.Test()
+    @DisplayName("Execute and undo ")
+    void testExecuteAndUndo_MaintainsState() {
+        taskManager.addTask(new Task("Task 1"));
+        taskManager.addTask(new Task("Task 2"));
+
+        taskManager.executeNextTask();
+        taskManager.undoLastTask();
+
+        assertEquals(2, taskManager.remainingTaskCount());
+    }
 
 }
 

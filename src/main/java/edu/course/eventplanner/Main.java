@@ -7,11 +7,9 @@ import edu.course.eventplanner.service.GuestListManager;
 import edu.course.eventplanner.service.SeatingPlanner;
 import edu.course.eventplanner.service.TaskManager;
 import edu.course.eventplanner.service.VenueSelector;
+import edu.course.eventplanner.util.Generators;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -92,10 +90,49 @@ public class Main {
     }
 
     private static void loadSampleData() {
-        System.out.println("Load sample data...");
-        // TODO implement this with the generators
+        System.out.println("How many guests to generate? (1-150)");
+        int numGuests = input.nextInt();
+        input.nextLine();
 
+        if (numGuests < 1 || numGuests > 150) {
+            System.out.println("Invalid input, using a default of 50 guests.");
+            numGuests = 50;
+        }
+        List<Venue> venues = Generators.generateVenues();
+        venueSelector = new VenueSelector(venues);
+        System.out.println("Loaded " + venues.size() + " venues:");
+        for (Venue v : venues) {
+        System.out.println("  - " + v.getName() + " ($" + String.format("%.0f",v.getCost()) +
+                ", capacity: " + v.getCapacity() + ")");
+        }
+        List<Guest> generatedGuests = Generators.GenerateGuests(numGuests);
+        for  (Guest guest : generatedGuests) {
+            guestListManager.addGuest(guest);
+        }
+        System.out.println("Loaded " + numGuests + " guests:");
+
+        // guest group for sample data
+        Map<String, Integer> groupCount = new HashMap<>();
+        for (Guest g : guestListManager.getAllGuests()) {
+            String tag = g.getGroupTag();
+            groupCount.put(tag, groupCount.getOrDefault(tag, 0) + 1);
+        }
+        System.out.println("  Guest breakdown:");
+        for (Map.Entry<String, Integer> entry : groupCount.entrySet()) {
+            System.out.println("    - " + entry.getKey() + ": " + entry.getValue());
+        }
+
+        // sample tasks
+        taskManager.addTask(new Task("Send invitations."));
+        taskManager.addTask(new Task("Order catering."));
+        taskManager.addTask(new Task("Set up decorations."));
+        System.out.println("Loaded " + taskManager.remainingTaskCount() + " preparation tasks");
+
+        System.out.println("Sample data loaded.");
+        System.out.println("You can now select a venue (Option 4) ");
     }
+
+
     private static void addGuest() {
         System.out.println("Enter Guest name: ");
         String name = input.nextLine().trim();
@@ -104,12 +141,20 @@ public class Main {
             return;
         }
         System.out.println("Enter Guest group tag (family/friends/neighbors/coworkers): ");
-        String groupTag = input.nextLine().trim();
+        String groupTag = input.nextLine().trim().toLowerCase();
+        List<String> validTags = Arrays.asList("family", "friends", "neighbors", "coworkers");
+
         if (groupTag.isEmpty()) {
+            groupTag = "untagged";
+            System.out.println("No tag provided. Using 'untagged'");
+        } else if (!validTags.contains(groupTag)) {
+            System.out.println("Invalid tag '" + groupTag + "'. Must be: family, friends, neighbors, or coworkers");
+            System.out.println("Using 'untagged' instead");
             groupTag = "untagged";
         }
         guestListManager.addGuest(new Guest(name, groupTag));
-        System.out.println("Guest added");
+        System.out.println("Guest '" + name + "' added with tag: " + groupTag);
+        System.out.println("Total guests: " + guestListManager.getGuestCount());
         seating = null;
     }
 
@@ -174,14 +219,15 @@ public class Main {
             System.out.println("No guests to seat, please add some guests");
             return;
         }
+        seating = seatingPlanner.generateSeating(guestListManager.getAllGuests());
         System.out.println("Seating chart: ");
         System.out.println("Venue: " + venue.getName());
         for (Map.Entry<Integer, List<Guest>> entry : seating.entrySet()) {
             int tableNumber = entry.getKey();
             List<Guest> guests = entry.getValue();
-            System.out.println("Guest: " + tableNumber);
+            System.out.println("Table: " + tableNumber);
             for (Guest guest : guests) {
-                System.out.println("Guest: " + guest.getName()+ " , group: " + guest.getGroupTag());
+                System.out.println("  - " + guest.getName() + " [" + guest.getGroupTag() + "]");
             }
         }
         System.out.println("Total tables: " + seating.size());
